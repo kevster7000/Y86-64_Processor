@@ -1,0 +1,114 @@
+                            | # Execution begins address 0
+0x000:                      |     .pos 0
+0x000: 30f4ff0f000000000000 |     irmovq stack, %rsp # Set up stack
+0x00a: 801400000000000000   |     call main      # Execute main
+0x013: 00                   |     halt           # Terminate
+                            | 
+0x014:                      | main:
+                            |     #-----------------------Matrix A
+0x014: 30f70100000000000000 |     irmovq $1, %rdi # Set rdi to 1 = A[0][0]
+0x01e: 30f80200000000000000 |     irmovq $2, %r8  # Set r8 to 2 = A[0][1]
+0x028: 30f90300000000000000 |     irmovq $3, %r9  # Set r9 to 3 = A[1][0]
+0x032: 30fa0400000000000000 |     irmovq $4, %r10 # Set r10 to 4 = A[1][1]
+                            | 
+                            |     #-----------------------Matrix B
+0x03c: 30fb0500000000000000 |     irmovq $5, %r11 # Set r11 to 5 = B[0][0]
+0x046: 30fc0600000000000000 |     irmovq $6, %r12 # Set r12 to 6 = B[0][1]
+0x050: 30fd0700000000000000 |     irmovq $7, %r13 # Set r13 to 7 = B[1][0]
+0x05a: 30fe0800000000000000 |     irmovq $8, %r14 # Set r14 to 8 = B[1][1]
+                            | 
+                            |     # Result matrix C is in memory 0x00 to 0x18
+                            |     # rax = a hold
+                            |     # rbx = b hold
+                            |     # rcx = desination
+                            |     # rdx = destination holder
+                            |     # rsi is iterator
+                            | 
+                            |     #-----------------------Compute C[0][0] 
+0x064: 30f60100000000000000 |     irmovq $1, %rsi
+                            | 
+0x06e: 2070                 |     rrmovq %rdi, %rax
+0x070: 20b3                 |     rrmovq %r11, %rbx
+0x072: 2031                 |     rrmovq %rbx, %rcx
+0x074: 806501000000000000   |     call multiply
+0x07d: 2032                 |     rrmovq %rbx, %rdx
+                            | 
+0x07f: 2080                 |     rrmovq %r8, %rax
+0x081: 20d3                 |     rrmovq %r13, %rbx
+0x083: 2031                 |     rrmovq %rbx, %rcx
+0x085: 806501000000000000   |     call multiply
+0x08e: 6032                 |     addq %rbx, %rdx
+                            | 
+0x090: 30f10000000000000000 |     irmovq $0, %rcx
+0x09a: 40210000000000000000 |     rmmovq %rdx, (%rcx)
+                            |     
+                            |     #-----------------------Compute C[0][1] 
+0x0a4: 30f60100000000000000 |     irmovq $1, %rsi
+                            | 
+0x0ae: 2070                 |     rrmovq %rdi, %rax
+0x0b0: 20c3                 |     rrmovq %r12, %rbx
+0x0b2: 2031                 |     rrmovq %rbx, %rcx
+0x0b4: 806501000000000000   |     call multiply
+0x0bd: 2032                 |     rrmovq %rbx, %rdx
+                            | 
+0x0bf: 2080                 |     rrmovq %r8, %rax
+0x0c1: 20e3                 |     rrmovq %r14, %rbx
+0x0c3: 2031                 |     rrmovq %rbx, %rcx
+0x0c5: 806501000000000000   |     call multiply
+0x0ce: 6032                 |     addq %rbx, %rdx
+                            | 
+0x0d0: 30f10800000000000000 |     irmovq $8, %rcx
+0x0da: 40210000000000000000 |     rmmovq %rdx, (%rcx)
+                            | 
+                            |     #-----------------------Compute C[1][0] 
+0x0e4: 30f60100000000000000 |     irmovq $1, %rsi
+                            | 
+0x0ee: 2090                 |     rrmovq %r9, %rax
+0x0f0: 20b3                 |     rrmovq %r11, %rbx
+0x0f2: 2031                 |     rrmovq %rbx, %rcx
+0x0f4: 806501000000000000   |     call multiply
+0x0fd: 2032                 |     rrmovq %rbx, %rdx
+                            | 
+0x0ff: 20a0                 |     rrmovq %r10, %rax
+0x101: 20d3                 |     rrmovq %r13, %rbx
+0x103: 2031                 |     rrmovq %rbx, %rcx
+0x105: 806501000000000000   |     call multiply
+0x10e: 6032                 |     addq %rbx, %rdx
+                            | 
+0x110: 30f11000000000000000 |     irmovq $16, %rcx
+0x11a: 40210000000000000000 |     rmmovq %rdx, (%rcx)
+                            | 
+                            |     #-----------------------Compute C[1][1] 
+0x124: 30f60100000000000000 |     irmovq $1, %rsi
+                            | 
+0x12e: 2090                 |     rrmovq %r9, %rax
+0x130: 20c3                 |     rrmovq %r12, %rbx
+0x132: 2031                 |     rrmovq %rbx, %rcx
+0x134: 806501000000000000   |     call multiply
+0x13d: 2032                 |     rrmovq %rbx, %rdx
+                            | 
+0x13f: 20a0                 |     rrmovq %r10, %rax
+0x141: 20e3                 |     rrmovq %r14, %rbx
+0x143: 2031                 |     rrmovq %rbx, %rcx
+0x145: 806501000000000000   |     call multiply
+0x14e: 6032                 |     addq %rbx, %rdx
+                            | 
+0x150: 30f11800000000000000 |     irmovq $24, %rcx
+0x15a: 40210000000000000000 |     rmmovq %rdx, (%rcx)
+                            | 
+0x164: 90                   |     ret
+                            | 
+                            | #-----------------------Multiplication with repeated addition
+0x165:                      | multiply:
+0x165: 6160                 |     subq %rsi, %rax
+0x167: 707001000000000000   |     jmp test
+0x170:                      | test:
+0x170: 747a01000000000000   |     jne loop
+0x179: 90                   |     ret
+0x17a:                      | loop:
+0x17a: 6013                 |     addq %rcx, %rbx
+0x17c: 706501000000000000   |     jmp multiply
+                            | 
+                            | # Stack starts here and grows to lower addresses
+0xfff:                      | 	.pos 0xfff
+0xfff:                      | stack:

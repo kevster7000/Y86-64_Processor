@@ -1,0 +1,114 @@
+# Execution begins address 0
+    .pos 0
+    irmovq stack, %rsp # Set up stack
+    call main      # Execute main
+    halt           # Terminate
+
+main:
+    #-----------------------Matrix A
+    irmovq $1, %rdi # Set rdi to 1 = A[0][0]
+    irmovq $2, %r8  # Set r8 to 2 = A[0][1]
+    irmovq $3, %r9  # Set r9 to 3 = A[1][0]
+    irmovq $4, %r10 # Set r10 to 4 = A[1][1]
+
+    #-----------------------Matrix B
+    irmovq $5, %r11 # Set r11 to 5 = B[0][0]
+    irmovq $6, %r12 # Set r12 to 6 = B[0][1]
+    irmovq $7, %r13 # Set r13 to 7 = B[1][0]
+    irmovq $8, %r14 # Set r14 to 8 = B[1][1]
+
+    # Result matrix C is in memory 0x00 to 0x18
+    # rax = a hold
+    # rbx = b hold
+    # rcx = desination
+    # rdx = destination holder
+    # rsi is iterator
+
+    #-----------------------Compute C[0][0] 
+    irmovq $1, %rsi
+
+    rrmovq %rdi, %rax
+    rrmovq %r11, %rbx
+    rrmovq %rbx, %rcx
+    call multiply
+    rrmovq %rbx, %rdx
+
+    rrmovq %r8, %rax
+    rrmovq %r13, %rbx
+    rrmovq %rbx, %rcx
+    call multiply
+    addq %rbx, %rdx
+
+    irmovq $0, %rcx
+    rmmovq %rdx, (%rcx)
+    
+    #-----------------------Compute C[0][1] 
+    irmovq $1, %rsi
+
+    rrmovq %rdi, %rax
+    rrmovq %r12, %rbx
+    rrmovq %rbx, %rcx
+    call multiply
+    rrmovq %rbx, %rdx
+
+    rrmovq %r8, %rax
+    rrmovq %r14, %rbx
+    rrmovq %rbx, %rcx
+    call multiply
+    addq %rbx, %rdx
+
+    irmovq $8, %rcx
+    rmmovq %rdx, (%rcx)
+
+    #-----------------------Compute C[1][0] 
+    irmovq $1, %rsi
+
+    rrmovq %r9, %rax
+    rrmovq %r11, %rbx
+    rrmovq %rbx, %rcx
+    call multiply
+    rrmovq %rbx, %rdx
+
+    rrmovq %r10, %rax
+    rrmovq %r13, %rbx
+    rrmovq %rbx, %rcx
+    call multiply
+    addq %rbx, %rdx
+
+    irmovq $16, %rcx
+    rmmovq %rdx, (%rcx)
+
+    #-----------------------Compute C[1][1] 
+    irmovq $1, %rsi
+
+    rrmovq %r9, %rax
+    rrmovq %r12, %rbx
+    rrmovq %rbx, %rcx
+    call multiply
+    rrmovq %rbx, %rdx
+
+    rrmovq %r10, %rax
+    rrmovq %r14, %rbx
+    rrmovq %rbx, %rcx
+    call multiply
+    addq %rbx, %rdx
+
+    irmovq $24, %rcx
+    rmmovq %rdx, (%rcx)
+
+    ret
+
+#-----------------------Multiplication with repeated addition
+multiply:
+    subq %rsi, %rax
+    jmp test
+test:
+    jne loop
+    ret
+loop:
+    addq %rcx, %rbx
+    jmp multiply
+
+# Stack starts here and grows to lower addresses
+	.pos 0xfff
+stack:
